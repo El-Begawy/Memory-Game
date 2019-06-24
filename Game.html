@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Game</title>
+    <h1 class="header">Memory Game Engine</h1>
+    <table id="1"></table>
+    <script>
+        var image_location = "Image_folders\\";
+        var image_size = 10; // number of images in the images folder
+        var height_matrix = 2; // the width of the matrix, this should be dynamic not STATIC TBD
+        var width_matrix = 2; // the height of the matrix, this should be dynamic TBD
+        var images_clicked = []; // images that the user clicked are stored here
+        var is_frozen = false; // determine if the board is frozen temporary
+        var completed = 0; //number of pieces the user completed
+        /*TBD
+        1-Implement a timer
+        2-improve the UI
+        3-test more
+        */
+        function imgTag(photo_src, id) {
+            var left = "<img alt =\"" + image_location;
+            var middle = "img_" + photo_src + ".jpg";
+            return left + middle + "\" src = \"Image_folders\\question_mark.jpg\" onclick=\"showImage(this.alt,this.id)\" \
+            height = \"150\" width = \"150\" id = " + id + "\">";
+        }
+        function randomPhoto(numberOfPhotos) {
+            return (Math.floor((Math.random() * numberOfPhotos)) + 1).toString();
+        }
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        function showImage(photo_to_show, id) {
+            if (photo_to_show == "done" || is_frozen)
+                return;
+            images_clicked.push(id);
+            document.getElementById(id).src = photo_to_show;
+            if (images_clicked.length == 2) {
+                is_frozen = true;
+                sleep(1500).then(() => {
+                    var is_match = document.getElementById(images_clicked[0]).src == document.getElementById(images_clicked[1]).src;
+                    var new_photo = image_location + (is_match
+                        ? "correct_mark.jpg" : "question_mark.jpg");
+                    for (var i = 0; i < 2; i++) {
+                        document.getElementById(images_clicked[i]).src = new_photo;
+                        if (is_match)
+                            document.getElementById(images_clicked[i]).alt = "done";
+                    }
+                    images_clicked.pop();
+                    images_clicked.pop();
+                    if (is_match)
+                        completed += 2;
+                    is_frozen = false;
+                    if (completed == height_matrix * width_matrix)
+                        alert("NICE, You Finished the game!!");
+                })
+            }
+        }
+        function addRandomPhotos() {
+            completed = 0;
+            is_frozen = false;
+            while(images_clicked.length)
+                images_clicked.pop();
+            var inner_html = "";
+            var images = [];
+            var photos_amount = (height_matrix * width_matrix) / 2;
+            for (var i = 0; i < photos_amount; i++) {
+                var temporary_photo = randomPhoto(image_size);
+                images.push("<td>" + imgTag(temporary_photo, 2 * i + 1) + "</td>");
+                images.push("<td>" + imgTag(temporary_photo, 2 * i + 2) + "</td>");
+            }
+            for (var i = 0; i < 10; i++)
+                images.sort(function f(a, b) { return 0.55 - Math.random(); });
+            for (var i = 0, counter = 0; i < height_matrix; i++) {
+                inner_html += "<tr>";
+                for (var j = 0; j < width_matrix; j++) {
+                    inner_html += images[counter];
+                    counter++;
+                }
+                inner_html += "</tr>";
+            }
+            document.getElementById("1").innerHTML = inner_html;
+        }
+    </script>
+    <button onclick="addRandomPhotos()" id="myButton1">Click me please</button>
+</head>
+
+</html>
