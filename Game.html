@@ -4,15 +4,18 @@
 <head>
     <title>Game</title>
     <h1 class="header">Memory Game Engine</h1>
-    <table id="1"></table>
+    <table id="game_grid"></table>
+    <p id="tries_counter"></p>
     <script>
         var image_location = "Image_folders\\";
         var image_size = 10; // number of images in the images folder
-        var height_matrix = 2; // the width of the matrix, this should be dynamic not STATIC TBD
-        var width_matrix = 2; // the height of the matrix, this should be dynamic TBD
+        var height_matrix = 2, width_matrix = 3;
         var images_clicked = []; // images that the user clicked are stored here
+        var single_image_width = Math.max(75,(200 - 4*width_matrix).toString());
+        var single_image_height = Math.max(75,(100 - 2*height_matrix).toString());
         var is_frozen = false; // determine if the board is frozen temporary
         var completed = 0; //number of pieces the user completed
+        var tries_to_finish = 0;
         /*TBD
         1-Implement a timer
         2-improve the UI
@@ -22,7 +25,7 @@
             var left = "<img alt =\"" + image_location;
             var middle = "img_" + photo_src + ".jpg";
             return left + middle + "\" src = \"Image_folders\\question_mark.jpg\" onclick=\"showImage(this.alt,this.id)\" \
-            height = \"150\" width = \"150\" id = " + id + "\">";
+            height =" + '"' + single_image_height + '"' + " width =" + '"' + single_image_width + '"' + "id = " + id + "\">";
         }
         function randomPhoto(numberOfPhotos) {
             return (Math.floor((Math.random() * numberOfPhotos)) + 1).toString();
@@ -48,16 +51,17 @@
                     }
                     images_clicked.pop();
                     images_clicked.pop();
+                    tries_to_finish++;
                     if (is_match)
                         completed += 2;
                     is_frozen = false;
                     if (completed == height_matrix * width_matrix)
-                        alert("NICE, You Finished the game!!");
+                        alert("NICE, Game finished in " + tries_to_finish + " trials.");
                 })
             }
         }
         function addRandomPhotos() {
-            completed = 0;
+            completed = tries_to_finish = 0;
             is_frozen = false;
             while(images_clicked.length)
                 images_clicked.pop();
@@ -69,8 +73,13 @@
                 images.push("<td>" + imgTag(temporary_photo, 2 * i + 1) + "</td>");
                 images.push("<td>" + imgTag(temporary_photo, 2 * i + 2) + "</td>");
             }
-            for (var i = 0; i < 10; i++)
-                images.sort(function f(a, b) { return 0.55 - Math.random(); });
+            for(var i = 0;i < images.length;i++)
+            {
+                var random_position = Math.floor(Math.random() * images.length);
+                var tmp = images[i];
+                images[i] = images[random_position];
+                images[random_position] = tmp;
+            }
             for (var i = 0, counter = 0; i < height_matrix; i++) {
                 inner_html += "<tr>";
                 for (var j = 0; j < width_matrix; j++) {
@@ -79,7 +88,7 @@
                 }
                 inner_html += "</tr>";
             }
-            document.getElementById("1").innerHTML = inner_html;
+            document.getElementById("game_grid").innerHTML = inner_html;
         }
     </script>
     <button onclick="addRandomPhotos()" id="myButton1">Click me please</button>
