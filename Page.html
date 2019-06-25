@@ -91,6 +91,7 @@
             completed = tries_to_finish = 0;
             UpdateCounter();
             time = 0;
+            clearInterval(timer);
             timer = setInterval(StartTimer,1000);
             is_frozen = false;
             while (images_clicked.length)
