@@ -15,6 +15,7 @@
         var tries_to_finish = 0;
         var time = 0;
         var timer;
+        var in_game = 0;
         /*TBD
         1-improve the UI
         2-test more
@@ -88,7 +89,10 @@
             document.getElementById("counter_text").innerHTML = tries_to_finish;
         }
         function addRandomPhotos() {
+            if(time < 2 && in_game)
+                return;
             completed = tries_to_finish = 0;
+            in_game = 1;
             UpdateCounter();
             time = 0;
             clearInterval(timer);
