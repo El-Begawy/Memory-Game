@@ -3,6 +3,132 @@
 <head>
     <title>Memory Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        var image_location = "Image_folders\\";
+        var image_size = 10; // number of images in the images folder
+        var height_matrix = 2, width_matrix = 3;
+        var images_clicked = []; // images that the user clicked are stored here
+        var single_image_width = Math.max(75, (200 - 4 * width_matrix).toString());
+        var single_image_height = Math.max(75, (100 - 2 * height_matrix).toString());
+        var is_frozen = false; // determine if the board is frozen temporary
+        var completed = 0; //number of pieces the user completed
+        var tries_to_finish = 0;
+        var time = 0;
+        var timer;
+        /*TBD
+        1-improve the UI
+        2-test more
+        */
+        function StartTimer()
+        {
+            CountTime();
+        }
+        function CountTime()
+        {
+            var inner_html;
+            inner_html = Math.floor(time/60) + " minutes " + time%60 + " seconds";
+            time++;
+            document.getElementById("Timer").innerHTML = inner_html;
+        }
+        function imgTag(photo_src, id) {
+            var left = "<img alt =\"" + image_location;
+            var middle = "img_" + photo_src + ".jpg";
+            return left + middle + "\" src = \"Image_folders\\question_mark.jpg\" onclick=\"showImage(this.alt,this.id)\" \
+            height =" + '"' + single_image_height + '"' + " width =" + '"' + single_image_width + '"' + "id = " + '"' +  id + '"' + "\">";
+        }
+        function randomPhoto(numberOfPhotos) {
+            return (Math.floor((Math.random() * numberOfPhotos)) + 1).toString();
+        }
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        function switch_img(id)
+        {
+            temp = document.getElementById(id).src;
+            document.getElementById(id).src = document.getElementById(id).alt;
+            document.getElementById(id).alt = temp;
+        }
+        function showImage(photo_to_show, id) {
+            if (photo_to_show == "done" || is_frozen)
+                return;
+            for (var i = 0; i < images_clicked.length; i++) {
+                if (images_clicked[i] == id)
+                    return;
+            }
+            images_clicked.push(id);
+            document.getElementById(id).src = photo_to_show;
+            if (images_clicked.length == 2) {
+                is_frozen = true;
+                sleep(1500).then(() => {
+                    var is_match = document.getElementById(images_clicked[0]).src == document.getElementById(images_clicked[1]).src;
+                    var new_photo = image_location + (is_match
+                        ? "correct_mark.jpg" : "question_mark.jpg");
+                    for (var i = 0; i < 2; i++) {
+                        document.getElementById(images_clicked[i]).src = new_photo;
+                        if (is_match)
+                            document.getElementById(images_clicked[i]).alt = "done";
+                    }
+                    images_clicked.pop();
+                    images_clicked.pop();
+                    tries_to_finish++;
+                    UpdateCounter();
+                    if (is_match)
+                        completed += 2;
+                    is_frozen = false;
+                    if (completed == height_matrix * width_matrix)
+                    {
+                        alert("NICE, Game finished in " + tries_to_finish + " trials.");
+                        clearInterval(timer);
+                    }
+                })
+            }
+        }
+        function UpdateCounter()
+        {
+            document.getElementById("counter_text").innerHTML = tries_to_finish;
+        }
+        function addRandomPhotos() {
+            completed = tries_to_finish = 0;
+            UpdateCounter();
+            time = 0;
+            timer = setInterval(StartTimer,1000);
+            is_frozen = false;
+            while (images_clicked.length)
+                images_clicked.pop();
+            var inner_html = "";
+            var images = [];
+            var photos_amount = (height_matrix * width_matrix) / 2;
+            for (var i = 0; i < photos_amount; i++) {
+                var temporary_photo = randomPhoto(image_size);
+                images.push("<td>" + imgTag(temporary_photo, 2 * i + 1) + "</td>");
+                images.push("<td>" + imgTag(temporary_photo, 2 * i + 2) + "</td>");
+            }
+            for (var i = 0; i < images.length; i++) {
+                var random_position = Math.floor(Math.random() * images.length);
+                var tmp = images[i];
+                images[i] = images[random_position];
+                images[random_position] = tmp;
+            }
+            for (var i = 0, counter = 0; i < height_matrix; i++) {
+                inner_html += "<tr>";
+                for (var j = 0; j < width_matrix; j++) {
+                    inner_html += images[counter];
+                    counter++;
+                }
+                inner_html += "</tr>";
+            }
+            document.getElementById("game_grid").innerHTML = inner_html;
+            for(var i = 0;i < photos_amount; i++){
+                switch_img(2*i + 1);
+                switch_img(2*i + 2);
+            }
+            sleep(2000).then(() => {
+            for(var i = 0; i < photos_amount; i++){
+                switch_img(2*i + 1);
+                switch_img(2*i + 2);
+            }})
+        }
+    </script>
     <style>
         * {
         box-sizing: border-box;
@@ -71,8 +197,14 @@
         <li>Try to match the images</li>
     </ol>
     <div class="row">
-        <div class="column middle">Game goes here</div>
-        <div class="column side">Instructions باين</div>
+        <div class="column middle">
+            <table id="game_grid" style="border: 1px solid black"></table>
+        </div>
+        <div class="column side">
+            <button onclick="addRandomPhotos();" id="myButton1">Start</button><br>
+            <p1>Tries: <p2 id="counter_text"></p2></p1><br>
+            <p3 id="Timer">Timer</p3>
+        </div>
     </div>
     <p class="footer">Made by: Amr El-Begawy & Mohanad Ayman.
     </p>

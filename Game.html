@@ -16,11 +16,23 @@
         var is_frozen = false; // determine if the board is frozen temporary
         var completed = 0; //number of pieces the user completed
         var tries_to_finish = 0;
+        var time = 0;
+        var timer;
         /*TBD
-        1-Implement a timer
-        2-improve the UI
-        3-test more
+        1-improve the UI
+        2-test more
         */
+        function StartTimer()
+        {
+            CountTime();
+        }
+        function CountTime()
+        {
+            var inner_html;
+            inner_html = Math.floor(time/60) + " minutes " + time%60 + " seconds";
+            time++;
+            document.getElementById("Timer").innerHTML = inner_html;
+        }
         function imgTag(photo_src, id) {
             var left = "<img alt =\"" + image_location;
             var middle = "img_" + photo_src + ".jpg";
@@ -56,16 +68,27 @@
                     images_clicked.pop();
                     images_clicked.pop();
                     tries_to_finish++;
+                    UpdateCounter();
                     if (is_match)
                         completed += 2;
                     is_frozen = false;
                     if (completed == height_matrix * width_matrix)
+                    {
                         alert("NICE, Game finished in " + tries_to_finish + " trials.");
+                        clearInterval(timer);
+                    }
                 })
             }
         }
+        function UpdateCounter()
+        {
+            document.getElementById("counter_text").innerHTML = tries_to_finish;
+        }
         function addRandomPhotos() {
             completed = tries_to_finish = 0;
+            UpdateCounter();
+            time = 0;
+            timer = setInterval(StartTimer,1000);
             is_frozen = false;
             while (images_clicked.length)
                 images_clicked.pop();
@@ -94,7 +117,11 @@
             document.getElementById("game_grid").innerHTML = inner_html;
         }
     </script>
-    <button onclick="addRandomPhotos()" id="myButton1">Click me please</button>
+    <button onclick="addRandomPhotos();" id="myButton1">Click me please</button>
 </head>
+<body>
+    <p1>Tries: <p2 id="counter_text"></p2></p1>
+    <p1 id="Timer">Timer</p1>
+</body>
 
 </html>
