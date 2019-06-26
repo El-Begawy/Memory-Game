@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
         var image_location = "Image_folders\\";
-        var image_size = 10; // number of images in the images folder
+        var image_size = 34; // number of images in the images folder
         var height_matrix = 2, width_matrix = 3;
         var images_clicked = []; // images that the user clicked are stored here
         var single_image_width = Math.max(75, (200 - 4 * width_matrix).toString());
@@ -45,6 +45,8 @@
         }
         function switch_img(id)
         {
+            if(document.getElementById(id).alt == "done")
+                return;
             temp = document.getElementById(id).src;
             document.getElementById(id).src = document.getElementById(id).alt;
             document.getElementById(id).alt = temp;
@@ -92,6 +94,9 @@
             if(time < 2 && in_game)
                 return;
             completed = tries_to_finish = 0;
+            var e = document.getElementById("Size");
+            height_matrix = e.options[e.selectedIndex].value;
+            width_matrix = height_matrix - height_matrix%2;
             in_game = 1;
             UpdateCounter();
             time = 0;
@@ -132,6 +137,19 @@
                 switch_img(2*i + 1);
                 switch_img(2*i + 2);
             }})
+        }
+        function Solve(){
+            if(completed == height_matrix * width_matrix || in_game == 0 || time < 2)
+                return;
+            var photos_amount = (height_matrix * width_matrix) / 2;
+            for(var i = 0;i < photos_amount; i++){
+                switch_img(2 * i + 1);
+                switch_img(2 * i + 2);
+            }
+            alert("Solved.");
+            clearInterval(timer);
+            completed = height_matrix * width_matrix;
+            is_frozen = true;
         }
     </script>
     <style>
@@ -202,13 +220,20 @@
         <li>Try to match the images</li>
     </ol>
     <div class="row">
+        <div class="column side"> <button onclick="Solve();" id="solve_button">Solve</button><br></div>
         <div class="column middle">
             <table id="game_grid" style="border: 1px solid black"></table>
         </div>
         <div class="column side">
             <button onclick="addRandomPhotos();" id="myButton1">Start</button><br>
             <p1>Tries: <p2 id="counter_text"></p2></p1><br>
-            <p3 id="Timer">Timer</p3>
+            <p3 id="Timer">Timer</p3><br>
+            <select name="Size" id="Size">
+                    <option value="3">3x2</option>
+                    <option value="4">4x4</option>
+                    <option value="5">5x4</option>
+                    <option value="6">6x6</option>
+            </select>
         </div>
     </div>
     <p class="footer">Made by: Amr El-Begawy & Mohanad Ayman.
