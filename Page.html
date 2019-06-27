@@ -52,7 +52,7 @@
             document.getElementById(id).alt = temp;
         }
         function showImage(photo_to_show, id) {
-            if (photo_to_show == "done" || is_frozen)
+            if (photo_to_show == "done" || is_frozen || time < 2)
                 return;
             for (var i = 0; i < images_clicked.length; i++) {
                 if (images_clicked[i] == id)
@@ -159,13 +159,16 @@
 
         body {
         font-family: 'Times New Roman', Times, serif;
+        background-image: url("Background-image.jpeg");
+        background-repeat: repeat;
+        color:#f1f1f1;
         }
 
         /* Style the header */
         .header {
-        background-color: #f1f1f1;
         padding: 30px;
         text-align: center;
+        color: #f1f1f1;
         font-size: 4vw;
         }
 
@@ -173,6 +176,7 @@
         .row {
         display: -webkit-flex;
         display: flex;
+        color:#f1f1f1;
         }
 
         /* Create three unequal columns that sits next to each other */
@@ -199,14 +203,21 @@
         background-color: #f1f1f1;
         padding: 10px;
         text-align: center;
+        color:black;
         }
 
         /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
         @media (max-width: 600px) {
-        .row {
-            -webkit-flex-direction: column;
-            flex-direction: column;
+            .row {
+                -webkit-flex-direction: column;
+                flex-direction: column;
+            }
         }
+        table {
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
         }
     </style>
 </head>
@@ -222,7 +233,7 @@
     <div class="row">
         <div class="column side"> <button onclick="Solve();" id="solve_button">Solve</button><br></div>
         <div class="column middle">
-            <table id="game_grid" style="border: 1px solid black"></table>
+            <table id="game_grid" style="border: 1px solid black;background: white;"></table>
         </div>
         <div class="column side">
             <button onclick="addRandomPhotos();" id="myButton1">Start</button><br>
