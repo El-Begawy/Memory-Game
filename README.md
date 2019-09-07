@@ -1,6 +1,9 @@
 # Memory Game
 A webpage that includes the memory game.
+<br>
 Features:
-1- Timer.
-2- Tries counter.
-3- Dynamic grid size.
+<ol>
+<li>Timer</li>
+<li>Tries counter</li>
+<li>Dynamic grid siz</li>
+</ol>
