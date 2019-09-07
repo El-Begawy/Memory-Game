@@ -5,5 +5,5 @@ Features:
 <ol>
 <li>Timer</li>
 <li>Tries counter</li>
-<li>Dynamic grid siz</li>
+<li>Dynamic grid size</li>
 </ol>
